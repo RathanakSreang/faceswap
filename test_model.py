@@ -9,9 +9,11 @@ autoencoder.load_weights('model/a_face_weight.h5')
 
 wrap ,a_faces = read_images_from("images/rathanak")
 a_faces = a_faces.astype('float32') / 255.
-a_faces = np.reshape(a_faces, (len(a_faces), image_size, image_size, 3))
+wrap = wrap.astype('float32') / 255.
+# a_faces = np.reshape(a_faces, (len(a_faces), image_size, image_size, 3))
 
-decoded_imgs = autoencoder.predict(a_faces)
+# decoded_imgs = autoencoder.predict(a_faces)
+decoded_imgs = autoencoder.predict(wrap)
 
 print(decoded_imgs[0])
 decoded_imgs = (decoded_imgs * 255).astype(np.uint8)

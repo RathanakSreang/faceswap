@@ -7,6 +7,12 @@ from libs.read_images_from import read_images_from
 from keras.optimizers import Adam
 import numpy as np
 import cv2
+import argparse
+
+ap = argparse.ArgumentParser()
+ap.add_argument("-m", "--model", type=str, default="",
+    help="model name", required=True)
+args = vars(ap.parse_args())
 
 image_size = 64
 input_shape = (image_size, image_size, 3)
@@ -81,9 +87,9 @@ wraped_face = wraped_face.astype('float32') / 255.
 from keras.callbacks import TensorBoard
 autoencoder.fit(wraped_face,
                 a_faces,
-                epochs=50,
+                epochs=1000,
                 batch_size=batch_size,
                 callbacks=[TensorBoard(log_dir='/tmp/autoencoder')])
 
-autoencoder.save('model/a_face_model.h5')
-autoencoder.save_weights("model/a_face_weight.h5")
+autoencoder.save("model/{0}_model.h5".format(args["model"]))
+autoencoder.save_weights("model/{0}e_weight.h5".format(args["model"]))
