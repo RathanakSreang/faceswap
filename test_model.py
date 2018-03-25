@@ -2,28 +2,30 @@ from keras.models import load_model
 from libs.read_images_from import read_images_from
 import numpy as np
 import cv2
+import argparse
+
 image_size = 64
+ap = argparse.ArgumentParser()
+ap.add_argument("-m", "--model", type=str, default="",
+    help="model name", required=True)
+args = vars(ap.parse_args())
 
-autoencoder = load_model('model/a_face_model.h5')
-autoencoder.load_weights('model/a_face_weight.h5')
+autoencoder = load_model("model/{0}_model.h5".format(args["model"]))
+autoencoder.load_weights("model/{0}_weight.h5".format(args["model"]))
 
-wrap ,a_faces = read_images_from("images/rathanak")
+wrap ,a_faces = read_images_from("images/tests")
+
+# show original image
+for (index, img) in enumerate(a_faces):
+  cv2.imshow("original_image_" + str(index), img)
+
 a_faces = a_faces.astype('float32') / 255.
 wrap = wrap.astype('float32') / 255.
-# a_faces = np.reshape(a_faces, (len(a_faces), image_size, image_size, 3))
 
-# decoded_imgs = autoencoder.predict(a_faces)
-decoded_imgs = autoencoder.predict(wrap)
-
-print(decoded_imgs[0])
+decoded_imgs = autoencoder.predict(a_faces)
 decoded_imgs = (decoded_imgs * 255).astype(np.uint8)
-print(decoded_imgs[0])
 for (index, img) in enumerate(decoded_imgs):
-  # img = img.reshape(image_size,image_size,3)
-  # img = img * 255.
-  cv2.imshow("image_name" + str(index), img)
+  cv2.imshow("swap_image_" + str(index), img)
 
 cv2.waitKey(0)
 cv2.destroyAllWindows()
-# encoded_imgs = encoder.predict(x_test)
-# decoded_imgs = decoder.predict(encoded_imgs)

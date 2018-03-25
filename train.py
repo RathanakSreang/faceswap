@@ -1,17 +1,18 @@
-from keras.layers import Input, Dense, Conv2D, MaxPooling2D, UpSampling2D, Flatten
-from keras.layers import Reshape, Conv2DTranspose
-from keras.layers import Activation, Dense, Input
-from keras.models import Model
 from keras import backend as K
-from libs.read_images_from import read_images_from
+from keras.models import Model
+from keras.layers import Input, Conv2D, MaxPooling2D, Flatten, Dense, Reshape, Conv2DTranspose, UpSampling2D, Activation
 from keras.optimizers import Adam
-import numpy as np
-import cv2
+from keras.callbacks import TensorBoard
+from libs.read_images_from import read_images_from
 import argparse
+# import numpy as np
+# import cv2
 
 ap = argparse.ArgumentParser()
 ap.add_argument("-m", "--model", type=str, default="",
     help="model name", required=True)
+ap.add_argument("-n", "--name", type=str, default="",
+    help="Image folder name", required=True)
 args = vars(ap.parse_args())
 
 image_size = 64
@@ -69,7 +70,7 @@ autoencoder.summary()
 optimizer = Adam(lr=5e-5, beta_1=0.5, beta_2=0.999)
 autoencoder.compile(loss='mean_absolute_error', optimizer=optimizer)
 
-wraped_face, a_faces = read_images_from("images/the_rock")
+wraped_face, a_faces = read_images_from("images/{0}".format(args["name"]))
 
 a_faces = a_faces.astype('float32') / 255.
 wraped_face = wraped_face.astype('float32') / 255.
@@ -84,7 +85,6 @@ wraped_face = wraped_face.astype('float32') / 255.
 # b_faces = read_images_from("images/rathanak")
 # b_faces = b_faces.astype('float32') / 255.
 
-from keras.callbacks import TensorBoard
 autoencoder.fit(wraped_face,
                 a_faces,
                 epochs=1000,
@@ -92,4 +92,4 @@ autoencoder.fit(wraped_face,
                 callbacks=[TensorBoard(log_dir='/tmp/autoencoder')])
 
 autoencoder.save("model/{0}_model.h5".format(args["model"]))
-autoencoder.save_weights("model/{0}e_weight.h5".format(args["model"]))
+autoencoder.save_weights("model/{0}_weight.h5".format(args["model"]))
